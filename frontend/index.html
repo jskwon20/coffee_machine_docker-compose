@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>커피 자판기 관리 시스템</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; }
+        .section { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h2 { color: #555; margin-bottom: 15px; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; }
+        button { background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #45a049; }
+        button.secondary { background: #2196F3; }
+        button.secondary:hover { background: #0b7dda; }
+        input, select { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 4px; }
+        .result { background: #f9f9f9; padding: 15px; margin-top: 15px; border-radius: 4px; border-left: 4px solid #4CAF50; }
+        .result pre { white-space: pre-wrap; word-wrap: break-word; }
+        .menu-item { display: inline-block; margin: 10px; padding: 15px; background: #fff; border: 2px solid #ddd; border-radius: 8px; min-width: 200px; }
+        .menu-item:hover { border-color: #4CAF50; }
+        .form-group { margin: 10px 0; }
+        label { display: inline-block; width: 120px; font-weight: bold; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>☕ 커피 자판기 관리 시스템</h1>
+
+        <div class="grid">
+            <!-- 메뉴 조회 -->
+            <div class="section">
+                <h2>📋 메뉴 조회</h2>
+                <button onclick="getMenu()">메뉴 조회</button>
+                <div id="menuResult" class="result" style="display:none;"></div>
+            </div>
+
+            <!-- 재고 조회 -->
+            <div class="section">
+                <h2>📦 재고 조회</h2>
+                <button onclick="getInventory()">재고 조회</button>
+                <div id="inventoryResult" class="result" style="display:none;"></div>
+            </div>
+
+            <!-- 매출 조회 -->
+            <div class="section">
+                <h2>💰 매출 조회</h2>
+                <button onclick="getSales()">매출 조회</button>
+                <div id="salesResult" class="result" style="display:none;"></div>
+            </div>
+        </div>
+
+        <!-- 주문 생성 -->
+        <div class="section">
+            <h2>🛒 주문 생성</h2>
+            <div class="form-group">
+                <label>메뉴 선택:</label>
+                <select id="orderMenuId">
+                    <option value="1">에스프레소 (3,000원)</option>
+                    <option value="2">라떼 (4,000원)</option>
+                    <option value="3">카푸치노 (4,500원)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>수량:</label>
+                <input type="number" id="orderQuantity" value="1" min="1">
+            </div>
+            <div class="form-group">
+                <label>지불 금액:</label>
+                <input type="number" id="orderPayment" value="5000" step="1000">
+            </div>
+            <button onclick="createOrder()">주문하기</button>
+            <div id="orderResult" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- 재고 추가 -->
+        <div class="section">
+            <h2>➕ 재고 추가</h2>
+            <div class="form-group">
+                <label>재고 항목:</label>
+                <select id="inventoryItem">
+                    <option value="coffee_beans">커피빈 (100g당 3,000원)</option>
+                    <option value="milk">우유 (100ml당 2,000원)</option>
+                    <option value="water">물 (100ml당 1,000원)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>추가 수량:</label>
+                <input type="number" id="inventoryAmount" value="100" step="100">
+            </div>
+            <button class="secondary" onclick="addInventory()">재고 추가</button>
+            <div id="addInventoryResult" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- Health Check -->
+        <div class="section">
+            <h2>🏥 서비스 상태 확인</h2>
+            <button onclick="checkHealth()">전체 상태 확인</button>
+            <div id="healthResult" class="result" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = {
+            order: 'http://localhost:8000',
+            inventory: 'http://localhost:8001',
+            billing: 'http://localhost:8002'
+        };
+
+        function showResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.style.borderLeftColor = isError ? '#f44336' : '#4CAF50';
+            element.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+
+        async function getMenu() {
+            try {
+                const response = await fetch(`${API_BASE.order}/menu`);
+                const data = await response.json();
+                showResult('menuResult', data);
+            } catch (error) {
+                showResult('menuResult', { error: error.message }, true);
+            }
+        }
+
+        async function getInventory() {
+            try {
+                const response = await fetch(`${API_BASE.inventory}/inventory`);
+                const data = await response.json();
+                showResult('inventoryResult', data);
+            } catch (error) {
+                showResult('inventoryResult', { error: error.message }, true);
+            }
+        }
+
+        async function getSales() {
+            try {
+                const response = await fetch(`${API_BASE.billing}/sales`);
+                const data = await response.json();
+                showResult('salesResult', data);
+            } catch (error) {
+                showResult('salesResult', { error: error.message }, true);
+            }
+        }
+
+        async function createOrder() {
+            try {
+                const menuId = parseInt(document.getElementById('orderMenuId').value);
+                const quantity = parseInt(document.getElementById('orderQuantity').value);
+                const payment = parseInt(document.getElementById('orderPayment').value);
+
+                const response = await fetch(`${API_BASE.order}/orders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        menu_id: menuId,
+                        quantity: quantity,
+                        payment_amount: payment
+                    })
+                });
+
+                const data = await response.json();
+                showResult('orderResult', data, !response.ok);
+                
+                if (response.ok) {
+                    getInventory();
+                    getSales();
+                }
+            } catch (error) {
+                showResult('orderResult', { error: error.message }, true);
+            }
+        }
+
+        async function addInventory() {
+            try {
+                const item = document.getElementById('inventoryItem').value;
+                const amount = parseInt(document.getElementById('inventoryAmount').value);
+
+                const response = await fetch(`${API_BASE.inventory}/inventory/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ item, amount })
+                });
+
+                const data = await response.json();
+                showResult('addInventoryResult', data, !response.ok);
+                
+                if (response.ok) {
+                    getInventory();
+                    getSales();
+                }
+            } catch (error) {
+                showResult('addInventoryResult', { error: error.message }, true);
+            }
+        }
+
+        async function checkHealth() {
+            try {
+                const services = ['order', 'inventory', 'billing'];
+                const results = {};
+
+                for (const service of services) {
+                    try {
+                        const response = await fetch(`${API_BASE[service]}/health`);
+                        const data = await response.json();
+                        results[`${service}-service`] = data;
+                    } catch (error) {
+                        results[`${service}-service`] = { status: 'error', message: error.message };
+                    }
+                }
+
+                showResult('healthResult', results);
+            } catch (error) {
+                showResult('healthResult', { error: error.message }, true);
+            }
+        }
+
+        // 페이지 로드 시 초기 데이터 조회
+        window.onload = () => {
+            getMenu();
+            getInventory();
+            getSales();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: coffee_machine
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  order-service:
+    build: ./services/order
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: password
+      DB_NAME: coffee_machine
+      INVENTORY_SERVICE_URL: http://inventory-service:8000
+      BILLING_SERVICE_URL: http://billing-service:8000
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  inventory-service:
+    build: ./services/inventory
+    ports:
+      - "8001:8000"
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: password
+      DB_NAME: coffee_machine
+      BILLING_SERVICE_URL: http://billing-service:8000
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  billing-service:
+    build: ./services/billing
+    ports:
+      - "8002:8000"
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: password
+      DB_NAME: coffee_machine
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
