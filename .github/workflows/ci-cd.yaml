@@ -50,6 +50,7 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: coffee_machine
         IMAGE_TAG: ${{ matrix.service }}-${{ github.sha }}
+        LATEST_TAG: ${{ matrix.service }}-latest
       run: |
         # Frontend는 경로가 다름
         if [ "${{ matrix.service }}" == "frontend" ]; then
@@ -58,6 +59,7 @@ jobs:
           BUILD_CONTEXT="./services/${{ matrix.service }}"
         fi
         
-        # 단일 리포지토리 사용 시 태그로 서비스 구분 (예: coffee_machine:order-commitsha)
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $BUILD_CONTEXT
+        # 단일 리포지토리 사용 시 태그로 서비스 구분 (예: coffee_machine:order-commitsha, coffee_machine:order-latest)
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$LATEST_TAG $BUILD_CONTEXT
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$LATEST_TAG
