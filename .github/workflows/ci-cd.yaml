@@ -39,6 +39,10 @@ jobs:
 
 
 
+    - name: Verify AWS Credentials
+      if: steps.changes.outputs.src == 'true'
+      run: aws sts get-caller-identity
+
     - name: Login to Amazon ECR
       if: steps.changes.outputs.src == 'true'
       id: login-ecr

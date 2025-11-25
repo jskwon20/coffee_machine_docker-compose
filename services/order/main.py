@@ -5,7 +5,7 @@ import mysql.connector
 import os
 import httpx
 
-app = FastAPI()
+app = FastAPI(root_path=os.getenv("ROOT_PATH", ""))
 
 app.add_middleware(
     CORSMiddleware,

@@ -105,9 +105,9 @@
 
     <script>
         const API_BASE = {
-            order: 'http://localhost:8000',
-            inventory: 'http://localhost:8001',
-            billing: 'http://localhost:8002'
+            order: '/api/order',
+            inventory: '/api/inventory',
+            billing: '/api/billing'
         };
 
         function showResult(elementId, data, isError = false) {

@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: coffee-ingress
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: coffee-group
+spec:
+  ingressClassName: alb
+  rules:
+  - host: gsitm-test.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 80
+      - path: /api/order
+        pathType: Prefix
+        backend:
+          service:
+            name: order
+            port:
+              number: 80
+      - path: /api/inventory
+        pathType: Prefix
+        backend:
+          service:
+            name: inventory
+            port:
+              number: 80
+      - path: /api/billing
+        pathType: Prefix
+        backend:
+          service:
+            name: billing
+            port:
+              number: 80

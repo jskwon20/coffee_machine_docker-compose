@@ -4,7 +4,7 @@ from pydantic import BaseModel
 import mysql.connector
 import os
 
-app = FastAPI()
+app = FastAPI(root_path=os.getenv("ROOT_PATH", ""))
 
 app.add_middleware(
     CORSMiddleware,

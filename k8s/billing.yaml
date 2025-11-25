@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: order
+  name: billing
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: order
+      app: billing
   template:
     metadata:
       labels:
-        app: order
+        app: billing
     spec:
       containers:
-      - name: order
-        image: 637341921879.dkr.ecr.ap-northeast-2.amazonaws.com/coffee_machine:order-latest
+      - name: billing
+        image: 637341921879.dkr.ecr.ap-northeast-2.amazonaws.com/coffee_machine:billing-latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
         env:
         - name: ROOT_PATH
-          value: /api/order
+          value: /api/billing
         - name: DB_HOST
           value: mysql
         - name: DB_USER
@@ -32,19 +32,14 @@ spec:
               key: password
         - name: DB_NAME
           value: coffee_machine
-        - name: INVENTORY_SERVICE_URL
-          value: http://inventory
-        - name: BILLING_SERVICE_URL
-          value: http://billing
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: order
+  name: billing
 spec:
-  type: LoadBalancer
   ports:
   - port: 80
     targetPort: 8000
   selector:
-    app: order
+    app: billing

@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: order
+  name: inventory
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: order
+      app: inventory
   template:
     metadata:
       labels:
-        app: order
+        app: inventory
     spec:
       containers:
-      - name: order
-        image: 637341921879.dkr.ecr.ap-northeast-2.amazonaws.com/coffee_machine:order-latest
+      - name: inventory
+        image: 637341921879.dkr.ecr.ap-northeast-2.amazonaws.com/coffee_machine:inventory-latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
         env:
         - name: ROOT_PATH
-          value: /api/order
+          value: /api/inventory
         - name: DB_HOST
           value: mysql
         - name: DB_USER
@@ -32,19 +32,16 @@ spec:
               key: password
         - name: DB_NAME
           value: coffee_machine
-        - name: INVENTORY_SERVICE_URL
-          value: http://inventory
         - name: BILLING_SERVICE_URL
           value: http://billing
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: order
+  name: inventory
 spec:
-  type: LoadBalancer
   ports:
   - port: 80
     targetPort: 8000
   selector:
-    app: order
+    app: inventory
