@@ -1,11 +1,11 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import mysql.connector
 import os
 import httpx
 
-app = FastAPI(root_path=os.getenv("ROOT_PATH", ""))
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -14,6 +14,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+router = APIRouter()
 
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "localhost"),
@@ -34,11 +36,11 @@ class OrderRequest(BaseModel):
 def get_db():
     return mysql.connector.connect(**DB_CONFIG)
 
-@app.get("/health")
+@router.get("/health")
 def health():
     return {"status": "ok"}
 
-@app.get("/menu")
+@router.get("/menu")
 def get_menu():
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -48,7 +50,7 @@ def get_menu():
     conn.close()
     return {"menus": menus}
 
-@app.post("/orders")
+@router.post("/orders")
 async def create_order(order: OrderRequest):
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -110,3 +112,5 @@ async def create_order(order: OrderRequest):
         "total_price": total_price,
         "change": payment_response.json()["change"]
     }
+
+app.include_router(router, prefix=os.getenv("ROOT_PATH", ""))

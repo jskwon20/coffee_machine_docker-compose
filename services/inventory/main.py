@@ -1,11 +1,11 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import mysql.connector
 import os
 import httpx
 
-app = FastAPI(root_path=os.getenv("ROOT_PATH", ""))
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -14,6 +14,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+router = APIRouter()
 
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "localhost"),
@@ -37,11 +39,11 @@ class AddInventoryRequest(BaseModel):
 def get_db():
     return mysql.connector.connect(**DB_CONFIG)
 
-@app.get("/health")
+@router.get("/health")
 def health():
     return {"status": "ok"}
 
-@app.get("/inventory")
+@router.get("/inventory")
 def get_inventory():
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -51,7 +53,7 @@ def get_inventory():
     conn.close()
     return inventory
 
-@app.post("/inventory/use")
+@router.post("/inventory/use")
 def use_inventory(request: UseInventoryRequest):
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -76,7 +78,7 @@ def use_inventory(request: UseInventoryRequest):
     
     return {"message": "재고 차감 완료"}
 
-@app.post("/inventory/add")
+@router.post("/inventory/add")
 async def add_inventory(request: AddInventoryRequest):
     if request.item not in ["coffee_beans", "water", "milk"]:
         raise HTTPException(status_code=400, detail="잘못된 재고 항목입니다")
@@ -98,3 +100,5 @@ async def add_inventory(request: AddInventoryRequest):
     conn.close()
     
     return {"message": f"{request.item} {request.amount}만큼 추가 완료"}
+
+app.include_router(router, prefix=os.getenv("ROOT_PATH", ""))

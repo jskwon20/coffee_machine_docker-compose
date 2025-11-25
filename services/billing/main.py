@@ -1,10 +1,10 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import mysql.connector
 import os
 
-app = FastAPI(root_path=os.getenv("ROOT_PATH", ""))
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -13,6 +13,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+router = APIRouter()
 
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "localhost"),
@@ -34,11 +36,11 @@ class InventoryCostRequest(BaseModel):
 def get_db():
     return mysql.connector.connect(**DB_CONFIG)
 
-@app.get("/health")
+@router.get("/health")
 def health():
     return {"status": "ok"}
 
-@app.get("/sales")
+@router.get("/sales")
 def get_sales():
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -55,7 +57,7 @@ def get_sales():
         "net_profit": net_profit
     }
 
-@app.post("/payment")
+@router.post("/payment")
 def process_payment(request: PaymentRequest):
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -88,7 +90,7 @@ def process_payment(request: PaymentRequest):
     
     return {"change": change, "message": "결제 완료"}
 
-@app.post("/inventory-cost")
+@router.post("/inventory-cost")
 def add_inventory_cost(request: InventoryCostRequest):
     costs = {"coffee_beans": 3000, "milk": 2000, "water": 1000}
     cost = costs.get(request.item, 0)
@@ -111,3 +113,5 @@ def add_inventory_cost(request: InventoryCostRequest):
     conn.close()
     
     return {"message": "재고 비용 처리 완료"}
+
+app.include_router(router, prefix=os.getenv("ROOT_PATH", ""))
