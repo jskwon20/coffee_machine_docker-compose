@@ -8,3 +8,7 @@ metadata:
     app.kubernetes.io/name: aws-load-balancer-controller
 spec:
   controller: ingress.k8s.aws/alb
+  parameters:
+    apiGroup: elbv2.k8s.aws
+    kind: IngressClassParams
+    name: alb
