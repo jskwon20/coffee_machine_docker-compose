@@ -1,31 +1,125 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>커피 자판기 관리 시스템</title>
+    <title>커피 자판기 관리 시스템(test)</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        h1 { text-align: center; color: #333; margin-bottom: 30px; }
-        .section { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h2 { color: #555; margin-bottom: 15px; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; }
-        button { background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
-        button:hover { background: #45a049; }
-        button.secondary { background: #2196F3; }
-        button.secondary:hover { background: #0b7dda; }
-        input, select { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 4px; }
-        .result { background: #f9f9f9; padding: 15px; margin-top: 15px; border-radius: 4px; border-left: 4px solid #4CAF50; }
-        .result pre { white-space: pre-wrap; word-wrap: break-word; }
-        .menu-item { display: inline-block; margin: 10px; padding: 15px; background: #fff; border: 2px solid #ddd; border-radius: 8px; min-width: 200px; }
-        .menu-item:hover { border-color: #4CAF50; }
-        .form-group { margin: 10px 0; }
-        label { display: inline-block; width: 120px; font-weight: bold; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #555;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        button.secondary {
+            background: #2196F3;
+        }
+
+        button.secondary:hover {
+            background: #0b7dda;
+        }
+
+        input,
+        select {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .result {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .result pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .menu-item {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px;
+            background: #fff;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            min-width: 200px;
+        }
+
+        .menu-item:hover {
+            border-color: #4CAF50;
+        }
+
+        .form-group {
+            margin: 10px 0;
+        }
+
+        label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>☕ 커피 자판기 관리 시스템</h1>
@@ -165,7 +259,7 @@
 
                 const data = await response.json();
                 showResult('orderResult', data, !response.ok);
-                
+
                 if (response.ok) {
                     getInventory();
                     getSales();
@@ -188,7 +282,7 @@
 
                 const data = await response.json();
                 showResult('addInventoryResult', data, !response.ok);
-                
+
                 if (response.ok) {
                     getInventory();
                     getSales();
@@ -227,4 +321,5 @@
         };
     </script>
 </body>
+
 </html>
