@@ -1,3 +1,0 @@
-varReference:
-- path: metadata/annotations/alb.ingress.kubernetes.io\/certificate-arn
-  kind: Ingress
