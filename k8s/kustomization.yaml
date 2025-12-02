@@ -11,14 +11,6 @@ resources:
   - ingress-class.yaml
   - ingress-params.yaml
 
-replacements:
-  - source:
-      kind: ConfigMap
-      name: terraform-outputs
-      fieldPath: data.certificate_arn
-    targets:
-      - select:
-          kind: Ingress
-          name: coffee-ingress
-        fieldPaths:
-          - metadata.annotations.[alb.ingress.kubernetes.io/certificate-arn]
+configurations:
+  - kustomizeconfig.yaml
+
