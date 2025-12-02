@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: order
-        image: 637341921879.dkr.ecr.ap-northeast-2.amazonaws.com/coffee_machine:order-latest
+        image: 637341921879.dkr.ecr.ap-northeast-2.amazonaws.com/coffee_machine:order-4e6621768595eefdcee34815d32ebf07c3027fbd
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
