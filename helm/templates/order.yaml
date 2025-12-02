@@ -33,9 +33,9 @@ spec:
         - name: DB_NAME
           value: coffee_machine
         - name: INVENTORY_SERVICE_URL
-          value: http://inventory
+          value: http://inventory:80
         - name: BILLING_SERVICE_URL
-          value: http://billing
+          value: http://billing:80
 ---
 apiVersion: v1
 kind: Service
