@@ -25,8 +25,8 @@ DB_CONFIG = {
     "charset": "utf8mb4"
 }
 
-INVENTORY_SERVICE = os.getenv("INVENTORY_SERVICE_URL", "http://localhost:8001") + "/api/inventory"
-BILLING_SERVICE = os.getenv("BILLING_SERVICE_URL", "http://localhost:8002") + "/api/billing"
+INVENTORY_SERVICE = os.getenv("INVENTORY_SERVICE_URL", "http://localhost:8001")
+BILLING_SERVICE = os.getenv("BILLING_SERVICE_URL", "http://localhost:8002")
 
 class OrderRequest(BaseModel):
     menu_id: int
