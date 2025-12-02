@@ -8,6 +8,9 @@ on:
       - 'frontend/**'
       - '.github/**'
 
+permissions:
+  contents: write
+
 env:
   AWS_REGION: ap-northeast-2 # 변경 필요
   AWS_DEFAULT_REGION: ap-northeast-2 # 변경 필요
